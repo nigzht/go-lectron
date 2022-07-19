@@ -1,0 +1,29 @@
+syntax = "proto3";
+package server;
+
+option go_package = "engine/cmd/server";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/any.proto";
+
+service Authentication {
+	rpc Login(google.protobuf.Empty) returns (LoginDetails) {}
+}
+
+message LoginDetails {
+	bool success = 1;
+	string sessionId = 2;
+}
+
+service Tasks {
+	rpc AddTask(TaskInput) returns (TaskDetails) {}
+}
+
+message TaskInput {
+	string type = 1;
+	google.protobuf.Any data = 2;
+}
+
+message TaskDetails {
+	string id = 1;
+}
