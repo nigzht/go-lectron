@@ -12,7 +12,7 @@ var (
 
 	serverCmd = &cobra.Command{
 		Use:     "server",
-		Short:   "boot up the rpc server. authentication is required to make requests.",
+		Short:   "boot up the rpc server.",
 		Run:     serverFunc,
 		Example: fmt.Sprintf("%s server --port=6969", appName),
 		ValidArgs: []string{

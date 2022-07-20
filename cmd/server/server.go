@@ -20,7 +20,5 @@ func Start(port int) error {
 
 	var opts []grpc.ServerOption
 	grpcServer := grpc.NewServer(opts...)
-	RegisterAuthenticationServer(grpcServer, NewAuthenticationServerImpl())
-	RegisterTasksServer(grpcServer, NewTasksServerImpl())
 	return grpcServer.Serve(lis)
 }

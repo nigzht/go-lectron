@@ -1,11 +1,17 @@
-# Nemesis
+# Golectron
 
-## Commands
+Golectron is a boilerplate for creating production-ready apps with golang and electron.
 
-go run engine/cmd
+## Getting Started 
 
-nemesis server --port=6969
-
+Generate the server handlers:
+```
 protoc --go_out=. --go_opt=paths=source_relative \
     --go-grpc_out=. --go-grpc_opt=paths=source_relative \
 ./cmd/server/server.proto
+```
+
+Then run:
+```
+go run engine/cmd
+```
