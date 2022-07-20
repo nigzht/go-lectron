@@ -4,7 +4,11 @@ Golectron is a boilerplate for creating production-ready apps with golang and el
 
 # Features
 
-Secure communication
+- [ ] Secure Communication
+- [ ] App Security
+- [ ] Build processes
+- [ ] Autoupdater
+- [ ] Code signing
 
 
 # Design
