@@ -10,7 +10,6 @@ Golectron is a boilerplate for creating production-ready apps with golang and el
 - [ ] Autoupdater
 - [ ] Code signing
 
-
 # Design
 
 Golectron is only meant for single backend service implementations. We try to keep the tools used as agnostic as possible, although some decisions are made -- namely, communication between the go and node process uses gRPC, electron-forge is used for building and the node process uses typescript. The frontend implementation is left up to the user but there are forks that use react and next.
