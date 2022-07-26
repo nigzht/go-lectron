@@ -1,0 +1,12 @@
+syntax = "proto3";
+package fmt;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/any.proto";
+
+// NOTE: you must specify go_package in every service for go protoc generation to work. Read more here: https://developers.google.com/protocol-buffers/docs/reference/go-generated
+option go_package = "service/cmd/server/fmt";
+
+service Fmt {
+	rpc Print(google.protobuf.Any) returns (google.protobuf.Empty) {}
+}

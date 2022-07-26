@@ -5,6 +5,8 @@ import (
 	"log"
 	"net"
 
+	fm "service/cmd/server/fmt"
+
 	grpc "google.golang.org/grpc"
 )
 
@@ -20,5 +22,7 @@ func Start(port int) error {
 
 	var opts []grpc.ServerOption
 	grpcServer := grpc.NewServer(opts...)
+	fm.RegisterFmtServer(grpcServer, fm.NewFmtServer())
+
 	return grpcServer.Serve(lis)
 }

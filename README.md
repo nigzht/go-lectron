@@ -1,29 +1,37 @@
 # Golectron
 
-Golectron is a boilerplate for creating production-ready apps with golang and electron. 
+Golectron is a boilerplate for creating medium-to-large-sized production-ready apps with golang and electron.
 
 # Features
 
-- [ ] Secure Communication
+- [ ] RPC Communication(gRPC)
 - [ ] App Security
 - [ ] Build processes
 - [ ] Autoupdater
 - [ ] Code signing
+- [ ] Hot reloading
 
 # Design
 
-Golectron is only meant for single backend service implementations. We try to keep the tools used as agnostic as possible, although some decisions are made -- namely, communication between the go and node process uses gRPC, electron-forge is used for building and the node process uses typescript. The frontend implementation is left up to the user but there are forks that use react and next.
+Go-lectron uses [gRPC](https://grpc.io/) to communicate between processes. It is designed to be extensible and easy to build in a monorepo format.
 
-## Getting Started 
+## Getting Started
 
-Generate the server handlers:
+Firstly, you will need the protoc tool for generating definitions. You can find installation instructions [here.](https://grpc.io/docs/protoc-installation/)
+
+Next run the bootstrap script.
 ```
-protoc --go_out=. --go_opt=paths=source_relative \
-    --go-grpc_out=. --go-grpc_opt=paths=source_relative \
-./cmd/server/server.proto
+./scripts/bootstrap.sh
 ```
 
-Then run:
+All done! you can now run the project by either running the app or the standalone service:
 ```
-go run engine/cmd
+# the app, which will launch the built service
+cd service/cmd; go build -o ../../build; cd ..
+cd app; yarn start
+
+# or the service
+
+go run service/cmd
 ```
+

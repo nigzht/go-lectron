@@ -1,8 +1,9 @@
 package main
 
 import (
-	"engine/cmd/server"
 	"fmt"
+	"log"
+	"service/cmd/server"
 
 	"github.com/spf13/cobra"
 )
@@ -22,7 +23,7 @@ var (
 
 	serverFunc = func(cmd *cobra.Command, args []string) {
 		if err := server.Start(port); err != nil {
-			fmt.Println(err)
+			log.Fatal(err)
 		}
 	}
 )
