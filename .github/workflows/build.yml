@@ -1,0 +1,167 @@
+on:
+  workflow_dispatch:
+name: Build
+jobs:
+  build-service:
+    strategy:
+      matrix:
+        os: [macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Install Go
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+        with:
+          go-version: 1.18.x
+      - name: Build
+        # TODO: agnostic name?
+        run: go build service/cmd
+      - name: "Upload Artifact"
+        uses: actions/upload-artifact@v3
+        with:
+          name: cmd-${{ matrix.os }}
+          path: cmd
+          retention-days: 1
+
+  build-app:
+    needs: build-service
+    strategy:
+      matrix:
+        os: [macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Download Artifact
+      - uses: actions/checkout@v3
+      - uses: actions/download-artifact@v3
+        with:
+          name: cmd-${{ matrix.os }}
+          path: app/extraResources/
+      - name: Rename Artifact
+        
+      - uses: borales/actions-yarn@v2.3.0
+        with:
+          working-directory: ./app
+          cmd: install # will run `yarn install` command
+      - uses: borales/actions-yarn@v2.3.0
+        with:
+          working-directory: ./app
+          cmd: package # will run `yarn package` command
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: app-${{ matrix.os }}
+          path: app/out/
+          retention-days: 1
+
+  distribute: 
+    needs: build-app
+    strategy:
+      matrix:
+        os: [macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+
+  # build-and-deploy:
+  #   needs: build-frontend
+  #   strategy:
+  #     matrix:
+  #       os: [windows-latest, "macos-latest"]
+  #   runs-on: ${{ matrix.os }}
+  #   env:
+  #     BUCKET_NAME: carina-autoupdater-1
+  #   steps:
+  #     - name: Extract branch name
+  #       shell: bash
+  #       run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+  #       id: extract_branch
+  #     - name: Install Go
+  #       uses: actions/setup-go@v2
+  #       with:
+  #         go-version: 1.16.x
+  #     - name: Checkout code
+  #       uses: actions/checkout@v2
+  #     - uses: actions/cache@v2
+  #       with:
+  #         # In order:
+  #         # * Module download cache
+  #         # * Build cache (Linux)
+  #         # * Build cache (Mac)
+  #         # * Build cache (Windows)
+  #         path: |
+  #           ~/go/pkg/mod
+  #           ~/.cache/go-build
+  #           ~/Library/Caches/go-build
+  #           %LocalAppData%\go-build
+  #         key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+  #         restore-keys: |
+  #           ${{ runner.os }}-go-
+  #     - uses: actions/download-artifact@v2
+  #       with:
+  #         name: frontend
+  #         path: cmd/bot/app/web/
+  #     - name: Build
+  #       run: go run ./scripts/build-scripts/main.go
+  #     - name: Import Code-Signing Certificates (MacOS)
+  #       if: matrix.os == 'macos-latest'
+  #       uses: Apple-Actions/import-codesign-certs@v1
+  #       with:
+  #         # The certificates in a PKCS12 file encoded as a base64 string
+  #         p12-file-base64: ${{ secrets.AC_P12_BASE64 }}
+  #         # The password used to import the PKCS12 file.
+  #         p12-password: ${{ secrets.AC_P12_BASE64_PASSWORD }}
+  #     - name: Sign Binaries w/ Signtool (Windows)
+  #       if: matrix.os == 'windows-latest'
+  #       uses: nigzht/code-sign-action@v5
+  #       with:
+  #         timestampUrl: http://timestamp.comodoca.com/authenticode
+  #         certificatesha1: "${{ secrets.WIN_CERT_SHA }}"
+  #         certificatename: "${{ secrets.WIN_CERT_NAME }}"
+  #         certificate: "${{ secrets.WIN_CERT }}"
+  #         password: "${{ secrets.WIN_CERT_PASS }}"
+  #         folder: "dist"
+  #         recursive: true
+  #     - name: Install gon via HomeBrew (MacOS)
+  #       if: matrix.os == 'macos-latest'
+  #       run: |
+  #         pushd .
+  #         cd /usr/local/Homebrew
+  #         git fetch --tags
+  #         git checkout 3.3.9
+  #         popd
+  #         brew tap mitchellh/gon
+  #         brew install mitchellh/gon/gon
+  #     - name: Sign Binaries w/ Gon (MacOS)
+  #       if: matrix.os == 'macos-latest'
+  #       env:
+  #         AC_USERNAME: ${{ secrets.AC_USERNAME }}
+  #         AC_PASSWORD: ${{ secrets.AC_PASSWORD }}
+  #       run: |
+  #         gon -log-level=debug -log-json ./scripts/build-scripts/gon.json
+  #     - name: "Authenticate to Google Cloud"
+  #       uses: "google-github-actions/auth@v0.4.1"
+  #       with:
+  #         credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+  #     - name: Upload Release
+  #       if: steps.extract_branch.outputs.branch == 'main'
+  #       uses: google-github-actions/upload-cloud-storage@v0
+  #       with:
+  #         path: dist/
+  #         destination: carina-autoupdater-1/${{ matrix.os }}
+  #         parent: false
+  #         glob: "**/*.{dmg,exe}"
+  #         process_gcloudignore: false
+  #     - name: Upload Release(staging)
+  #       if: steps.extract_branch.outputs.branch != 'main'
+  #       uses: google-github-actions/upload-cloud-storage@v0
+  #       with:
+  #         path: dist/
+  #         destination: carina-autoupdater-staging/${{ matrix.os }}
+  #         parent: false
+  #         glob: "**/*.{dmg,exe}"
+  #         process_gcloudignore: false
+  #     - name: Upload Artifact
+  #       uses: actions/upload-artifact@v2
+  #       with:
+  #         name: dist-${{ matrix.os }}
+  #         path: dist/
+  #         retention-days: 1
