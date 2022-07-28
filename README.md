@@ -4,12 +4,12 @@ Golectron is a boilerplate for creating medium-to-large-sized production-ready a
 
 # Features
 
-- [ ] RPC Communication(gRPC)
+- [x] RPC Communication(gRPC)
 - [ ] App Security
 - [ ] Build processes
 - [ ] Autoupdater
 - [ ] Code signing
-- [ ] Hot reloading
+- [x] Hot reloading
 
 # Design
 
@@ -18,11 +18,6 @@ Go-lectron uses [gRPC](https://grpc.io/) to communicate between processes. It is
 ## Getting Started
 
 Firstly, you will need the protoc tool for generating definitions. You can find installation instructions [here.](https://grpc.io/docs/protoc-installation/)
-
-You will also need to install the protobufjs-cli tool for converting proto files to json:
-```
-npm install -g protobufjs-cli --save-prefix=~ 
-```
 
 Next run the bootstrap script.
 ```
@@ -39,4 +34,3 @@ cd app; yarn start
 
 go run service/cmd
 ```
-
