@@ -27,8 +27,7 @@ Next run the bootstrap script.
 All done! you can now run the project by either running the app or the standalone service:
 ```
 # the app, which will launch the built service
-cd service/cmd; go build -o ../../build; cd ..
-cd app; yarn start
+go run service/cmd & cd app; yarn start
 
 # or the service
 
