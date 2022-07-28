@@ -1,10 +1,3 @@
-# ~~~~ root ~~~~
-
-
-build/*
-!build/.gitkeep
-
-
 # ~~~~ go ~~~~
 
 
@@ -33,8 +26,13 @@ go.work
 # proto generated files
 *.pb.go
 
+# tmp
+*tmp
+
 # ~~~~ node ~~~~
 
+app/src/service/build/*
+!app/src/service/build/.gitkeep
 
 # Logs
 logs
@@ -168,4 +166,7 @@ dist
 .pnp.*
 
 # proto generated files
-app/src/service/proto
+app/src/service/protos
+
+# binaries 
+app/extraResources/*

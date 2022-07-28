@@ -1,6 +1,7 @@
 import { app, BrowserWindow } from "electron";
-import Service from "./service/service";
-import Fmt from "./service/fmt_client";
+import Service from "./service";
+import isDev from "electron-is-dev"
+import { Fmt } from "./service/client/fmt";
 
 // dotenv for .env app file
 require("dotenv").config();
@@ -9,6 +10,8 @@ require("dotenv").config();
 // plugin that tells the Electron app where to look for the Webpack-bundled app code (depending on
 // whether you're running in development or production).
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
+
+const DEF_BINARY_FILE_NAME = "cmd"
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require("electron-squirrel-startup")) {
@@ -27,7 +30,9 @@ const createWindow = (): void => {
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+  if(isDev) {
+    mainWindow.webContents.openDevTools();
+  }
 };
 
 // This method will be called when Electron has finished
@@ -55,9 +60,23 @@ app.on("activate", () => {
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
 
-export const service = new Service(process.env.SERVICE_BINARY_PATH);
+if (isDev) {
+  new Fmt(Number(process.env.DEVELOPMENT_SERVICE_PORT)).Print({type_url: "type.googleapis.com/google.protobuf.StringValue", value: Buffer.from("hello world")});
+} else {
+  const service = new Service(DEF_BINARY_FILE_NAME);
+  service.spawn().then((st) => {
+    st.stdout.on('data', (data) => {
+      console.log('stdout: ' + data.toString());
+    });
 
-// launch the executable then access the fmt service
-service.Exec().then((port: number) => {
-  new Fmt(port).Print("hello world");
-});
+    st.stderr.on('data', (data) =>  {
+      console.log('stderr: ' + data.toString());
+    });
+
+    st.on('exit', (code) => {
+      console.log('child process exited with code ' + code);
+    });
+
+    new Fmt(service.getPort()).Print({type_url: "type.googleapis.com/google.protobuf.StringValue", value: Buffer.from("hello world")});
+  })
+}

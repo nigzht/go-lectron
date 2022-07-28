@@ -17,6 +17,6 @@ func NewFmtServer() *FmtServerImpl {
 }
 
 func (f *FmtServerImpl) Print(_ context.Context, d *anypb.Any) (*emptypb.Empty, error) {
-	fmt.Print(d)
+	fmt.Print(string(d.Value))
 	return &emptypb.Empty{}, nil
 }

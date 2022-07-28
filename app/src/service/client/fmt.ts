@@ -1,11 +1,11 @@
+import path from "path"
 import * as grpc from "@grpc/grpc-js";
 import * as protoLoader from "@grpc/proto-loader";
-import { FmtClient } from "./proto/fmt/Fmt";
+import { FmtClient } from "../protos/generated/fmt/Fmt";
+import { Any } from "../protos/generated/google/protobuf/Any";
+const protoPath = require("../protos/fmt.proto")
 
-const FMT_PROTO_PATH =
-  __dirname + "../../../../proto/fmt.proto";
-
-export default class Fmt {
+export class Fmt {
   private fmt: any;
   private client: FmtClient;
   private port: number;
@@ -19,7 +19,7 @@ export default class Fmt {
       return this.client;
     }
 
-    await protoLoader.load(FMT_PROTO_PATH, {
+    await protoLoader.load(path.resolve(__dirname, protoPath), {
       keepCase: true,
       longs: String,
       enums: String,
@@ -29,18 +29,17 @@ export default class Fmt {
       this.fmt = grpc.loadPackageDefinition(packageDefinition).fmt;
     });
 
-
     this.client = new this.fmt.Fmt(
       `localhost:${this.port}`,
       grpc.credentials.createInsecure()
     );
   }
 
-  async Print(v: any) {
+  async Print(v: Any) {
     if (!this.client) {
       await this.getClient();
     }
 
-    this.client.Print({ type_url: "type.googleapis.com/google.protobuf.StringValue", value: v }, () => {});
+    this.client.Print(v, (err) => err && console.log(err));
   }
 }

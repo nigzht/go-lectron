@@ -26,4 +26,8 @@ module.exports = [
       },
     },
   },
+  {
+    test: /\.proto/,
+    type: 'asset/resource',
+  }
 ];
