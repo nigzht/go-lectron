@@ -13,12 +13,17 @@ jobs:
         os: [macos-latest]
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v3
+    - name: Install Protoc
+      uses: arduino/setup-protoc@v1
     - uses: actions/setup-go@v3
       with:
         go-version: 1.18.x
     - name: Work
       run: go work init ./service
+    - name: PATH
+      run: export PATH="$PATH:$(go env GOWORK)/bin"
+    - name: Generate Protos
+      run: protoc --go_out=. --go-grpc_out=. ./protos/*.proto
     - name: Build
       run:  go build ./service/cmd
     - name: "Upload Artifact"
@@ -46,6 +51,10 @@ jobs:
         with:
           working-directory: ./app
           cmd: install
+      - name: Generate Protos
+        run: |
+          cp ./protos/*.proto ./app/src/service/protos/
+          ./app/node_modules/.bin/proto-loader-gen-types --longs=String --enums=String -defaults- --oneofs --grpcLib=@grpc/grpc-js --outDir=./app/src/service/protos/generated ./protos/*.proto
       - uses: borales/actions-yarn@v2.3.0
         with:
           working-directory: ./app
