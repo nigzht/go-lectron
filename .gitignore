@@ -30,6 +30,7 @@ go.work
 *tmp
 
 # ~~~~ node ~~~~
+.DS_Store
 
 app/src/service/build/*
 !app/src/service/build/.gitkeep

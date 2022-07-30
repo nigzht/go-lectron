@@ -1,6 +1,11 @@
 on:
   workflow_dispatch:
 name: Build
+
+env: 
+  APP_NAME: golectron
+  SERVICE_NAME: cmd
+
 jobs:
   build-service:
     strategy:
@@ -8,20 +13,17 @@ jobs:
         os: [macos-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      - name: Install Go
-      - uses: actions/checkout@v3
-      - uses: actions/setup-go@v3
-        with:
-          go-version: 1.18.x
-      - name: Build
-        # TODO: agnostic name?
-        run: go build service/cmd
-      - name: "Upload Artifact"
-        uses: actions/upload-artifact@v3
-        with:
-          name: cmd-${{ matrix.os }}
-          path: cmd
-          retention-days: 1
+    - uses: actions/checkout@v3
+    - uses: actions/setup-go@v3
+      with:
+        go-version: 1.18.x
+    - name: Build
+      run:  go build ./service/cmd
+    - name: "Upload Artifact"
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ env.SERVICE_NAME }}-${{ matrix.os }}
+        path: ${{ env.SERVICE_NAME }}
 
   build-app:
     needs: build-service
@@ -30,36 +32,53 @@ jobs:
         os: [macos-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      - name: Download Artifact
       - uses: actions/checkout@v3
       - uses: actions/download-artifact@v3
         with:
-          name: cmd-${{ matrix.os }}
+          name: ${{ env.SERVICE_NAME }}-${{ matrix.os }}
           path: app/extraResources/
-      - name: Rename Artifact
-        
+      - name: Rename Artifact(unix)
+        if: matrix.os == 'macos-latest'
+        run: mv app/extraResources/${{ env.SERVICE_NAME }}-${{ matrix.os }} app/extraResources/${{ env.SERVICE_NAME }}
       - uses: borales/actions-yarn@v2.3.0
         with:
           working-directory: ./app
-          cmd: install # will run `yarn install` command
+          cmd: install
       - uses: borales/actions-yarn@v2.3.0
         with:
           working-directory: ./app
-          cmd: package # will run `yarn package` command
+          cmd: make
       - name: Upload Artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: app-${{ matrix.os }}
           path: app/out/
           retention-days: 1
 
-  distribute: 
+  distribute:
     needs: build-app
     strategy:
       matrix:
         os: [macos-latest]
     runs-on: ${{ matrix.os }}
     steps:
+      # download the artifacts. TODO: when do i need to checkout?
+      - uses: actions/checkout@v3
+      - uses: actions/download-artifact@v3
+        with:
+          name: app-${{ matrix.os }}
+          path: app/out/
+    # upload them to cloud storage.
+    
+
+
+  # distribute: 
+  #   needs: build-app
+  #   strategy:
+  #     matrix:
+  #       os: [macos-latest]
+  #   runs-on: ${{ matrix.os }}
+  #   steps:
 
   # build-and-deploy:
   #   needs: build-frontend

@@ -2,7 +2,7 @@ package fmt
 
 import (
 	context "context"
-	"fmt"
+	"service/pkg/pfmt"
 
 	anypb "google.golang.org/protobuf/types/known/anypb"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
@@ -17,6 +17,6 @@ func NewFmtServer() *FmtServerImpl {
 }
 
 func (f *FmtServerImpl) Print(_ context.Context, d *anypb.Any) (*emptypb.Empty, error) {
-	fmt.Print(string(d.Value))
+	pfmt.Print(string(d.Value))
 	return &emptypb.Empty{}, nil
 }
