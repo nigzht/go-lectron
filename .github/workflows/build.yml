@@ -17,8 +17,10 @@ jobs:
     - uses: actions/setup-go@v3
       with:
         go-version: 1.18.x
+    - name: test
+      run: echo "$PWD"
     - name: Build
-      run:  go build ./service/cmd
+      run:  go build service/cmd
     - name: "Upload Artifact"
       uses: actions/upload-artifact@v3
       with:
