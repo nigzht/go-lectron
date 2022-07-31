@@ -28,9 +28,7 @@ jobs:
       env: 
         PATH: "$PATH:$(go env GOPATH)/bin"
     - name: Generate Protos
-      run: |
-        export PATH="$PATH:$(go env GOPATH)/bin"
-        protoc --go_out=. --go-grpc_out=. ./protos/*.proto
+      run: export PATH="$PATH:$(go env GOPATH)/bin"; protoc --go_out=. --go-grpc_out=. ./protos/*.proto
     - name: Build
       run:  go build ./service/cmd
     - name: "Upload Artifact"
