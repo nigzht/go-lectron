@@ -25,8 +25,8 @@ jobs:
       run: go work init ./service
     - name: Install protoc-gen-go
       run: go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
-    - name: Update path
-      run: export PATH="$PATH:$(go env GOPATH)/bin"
+      env: 
+        PATH: "$PATH:$(go env GOPATH)/bin"
     - name: Generate Protos
       run: protoc --go_out=. --go-grpc_out=. ./protos/*.proto
     - name: Build
