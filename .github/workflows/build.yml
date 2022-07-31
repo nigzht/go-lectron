@@ -19,11 +19,11 @@ jobs:
     - uses: actions/setup-go@v3
       with:
         go-version: 1.18.x
-    - name: debug
-      working-directory: service
-      run: ls -R | grep ":$" | sed -e 's/:$//' -e 's/[^-][^\/]*\//--/g' -e 's/^/   /' -e 's/-/|/'
     - name: Work
       run: go work init ./service
+    - name: Deps
+      working-directory: ./service
+      run: go get all
     - name: Go Path
       run: export PATH="$PATH:$(go env GOWORK)/bin"
     - name: Generate Protos
