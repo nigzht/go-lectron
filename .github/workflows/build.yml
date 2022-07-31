@@ -23,13 +23,8 @@ jobs:
         go-version: 1.18.x
     - name: Work
       run: go work init ./service
-    - name: Deps
-      working-directory: ./service
-      run: go get all
-    - name: Set Path
-      run: echo "PATH=$GITHUB_PATH:$(go env GOWORK)/bin" >> $GITHUB_ENV
-    - name: debug
-      run: env
+    - name: Install protoc-gen-go
+      run: go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
     - name: Generate Protos
       run: protoc --go_out=. --go-grpc_out=. ./protos/*.proto
     - name: Build
