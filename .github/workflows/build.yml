@@ -13,6 +13,7 @@ jobs:
         os: [macos-latest]
     runs-on: ${{ matrix.os }}
     steps:
+    - uses: actions/checkout@v3
     - name: Install Protoc
       uses: arduino/setup-protoc@v1
     - uses: actions/setup-go@v3
@@ -22,7 +23,7 @@ jobs:
       working-directory: service
       run: ls -R | grep ":$" | sed -e 's/:$//' -e 's/[^-][^\/]*\//--/g' -e 's/^/   /' -e 's/-/|/'
     - name: Work
-      run: go work init service
+      run: go work init ./service
     - name: Go Path
       run: export PATH="$PATH:$(go env GOWORK)/bin"
     - name: Generate Protos
