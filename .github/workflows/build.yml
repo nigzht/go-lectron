@@ -26,9 +26,10 @@ jobs:
     - name: Deps
       working-directory: ./service
       run: go get all
-    - name: System path
-      run: |
-        export PATH="$GITHUB_PATH:$(go env GOWORK)/bin"
+    - uses: lukka/set-shell-env@v1
+      name: System path
+      with:
+        PATH: "$GITHUB_PATH:$(go env GOWORK)/bin"
     - name: Generate Protos
       run: protoc --go_out=. --go-grpc_out=. ./protos/*.proto
     - name: Build
