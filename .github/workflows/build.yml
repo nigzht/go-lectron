@@ -27,7 +27,7 @@ jobs:
       run: go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
     - name: Update path
       run: |
-          echo "$PATH:$(go env GOPATH)/bin" >> $PATH
+          echo "$GITHUB_WORKSPACE/$(go env GOPATH)/bin" >> $GITHUB_PATH
     - name: Generate Protos
       run: protoc --go_out=. --go-grpc_out=. ./protos/*.proto
     - name: Build
