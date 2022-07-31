@@ -28,6 +28,8 @@ jobs:
       run: go get all
     - name: Set Path
       run: echo "PATH=$GITHUB_PATH:$(go env GOWORK)/bin" >> $GITHUB_ENV
+    - name: debug
+      run: echo env
     - name: Generate Protos
       run: protoc --go_out=. --go-grpc_out=. ./protos/*.proto
     - name: Build
