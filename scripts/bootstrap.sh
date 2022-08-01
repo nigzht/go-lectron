@@ -8,11 +8,13 @@ if [[ ! -d "$DIR" ]]; then DIR="$PWD"; fi
 cd app; yarn install; cd ..
 cd service; go get all; cd ..
 
+go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+
 # initialize go workspace.
 go work init ./service
 
 # set the path for protoc.
-export PATH="$PATH:$(go env GOWORK)/bin"
+export PATH="$PATH:$(go env GOPATH)/bin"
 
 # generate files for proto.
 "$DIR/protos.sh"
