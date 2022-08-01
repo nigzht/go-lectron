@@ -33,7 +33,3 @@ go run service/cmd & cd app; yarn start
 
 go run service/cmd
 ```
-
-## Development
-
-pls run your github actions changes locally. its faster and doesn't cost money. You can do so with [act.](https://github.com/nektos/act)

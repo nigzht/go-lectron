@@ -167,7 +167,8 @@ dist
 .pnp.*
 
 # proto generated files
-app/src/service/protos
+app/src/service/protos/*
+!app/src/service/protos/.gitkeep
 
 # binaries 
 app/extraResources/*
