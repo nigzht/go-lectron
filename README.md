@@ -6,9 +6,9 @@ Golectron is a boilerplate for creating medium-to-large-sized production-ready a
 
 - [x] RPC Communication(gRPC)
 - [ ] App Security
-- [ ] Build processes
-- [ ] Autoupdater
-- [ ] Code signing
+- [x] Build processes
+- [x] Autoupdater
+- [x] Code signing
 - [x] Hot reloading
 
 # Design
